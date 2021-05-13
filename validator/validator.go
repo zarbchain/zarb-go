@@ -65,6 +65,10 @@ func (val *Validator) UpdateLastJoinedHeight(height int) {
 	val.data.LastJoinedHeight = height
 }
 
+func (val *Validator) UpdateBondingHeight(height int) {
+	val.data.BondingHeight = height
+}
+
 // Hash return the hash of this validator
 func (val *Validator) Hash() crypto.Hash {
 	bs, err := val.Encode()

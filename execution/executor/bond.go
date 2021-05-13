@@ -39,6 +39,7 @@ func (e *BondExecutor) Execute(trx *tx.Tx, sb sandbox.Sandbox) error {
 	bonderAcc.IncSequence()
 	bonderAcc.SubtractFromBalance(pld.Stake + trx.Fee())
 	val.AddToStake(pld.Stake)
+	val.UpdateBondingHeight(sb.CurrentHeight())
 
 	sb.UpdateAccount(bonderAcc)
 	sb.UpdateValidator(val)

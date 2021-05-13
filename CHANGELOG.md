@@ -1,8 +1,8 @@
 # Changelog
 
 ## 1.0.1
-
 - Fixing dll missing issue on Windows #192
+- Updating last bonding height for validators #199
 
 ## 1.0.0
 - Refactoring Consensus module

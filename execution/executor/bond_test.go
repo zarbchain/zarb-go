@@ -52,7 +52,7 @@ func TestExecuteBondTx(t *testing.T) {
 	})
 	assert.Equal(t, tSandbox.Account(bonder).Balance(), int64(10000000000-2000))
 	assert.Equal(t, tSandbox.Validator(addr).Stake(), int64(1000))
-	assert.Equal(t, tSandbox.Validator(addr).BondingHeight(), 102)
+	assert.Equal(t, tSandbox.Validator(addr).BondingHeight(), 101)
 	assert.Equal(t, exe.Fee(), int64(1000))
 
 	checkTotalCoin(t, 1000)
