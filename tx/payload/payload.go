@@ -13,6 +13,7 @@ const (
 	PayloadTypeBond      = Type(2)
 	PayloadTypeSortition = Type(3)
 	PayloadTypeUnbond    = Type(4)
+	PayloadTypeWithdraw  = Type(5)
 )
 
 func (t Type) String() string {
@@ -23,6 +24,8 @@ func (t Type) String() string {
 		return "bond"
 	case PayloadTypeUnbond:
 		return "unbond"
+	case PayloadTypeWithdraw:
+		return "withdraw"
 	case PayloadTypeSortition:
 		return "sortition"
 	}

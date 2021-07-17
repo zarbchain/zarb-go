@@ -21,6 +21,7 @@ type Sandbox interface {
 	EnterCommittee(crypto.Hash, crypto.Address) error
 
 	CommitteeSize() int
+	UnbondInterval() int
 	CurrentHeight() int
 	BlockHeight(crypto.Hash) int
 	TransactionToLiveInterval() int

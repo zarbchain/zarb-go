@@ -16,8 +16,8 @@ import (
 )
 
 type GatewayConfig struct {
-	Enable  bool   `toml:"Enable" comment:"Enable gRPCGateway servers for client communication."`
-	Address string `toml:"Address"  comment:"Address to listen for incoming connections for gRPCGateway.Default port is 8080."`
+	Enable     bool   `toml:"Enable" comment:"Enable gRPCGateway servers for client communication."`
+	Address    string `toml:"Address"  comment:"Address to listen for incoming connections for gRPCGateway.Default port is 8080."`
 	EnableCORS bool
 }
 

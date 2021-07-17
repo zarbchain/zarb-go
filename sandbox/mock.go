@@ -104,11 +104,19 @@ func (m *MockSandbox) AppendStampAndUpdateHeight(height int, stamp crypto.Hash) 
 }
 
 func (m *MockSandbox) AccSeq(a crypto.Address) int {
-	return m.Accounts[a].Sequence()
+	if acc, ok := m.Accounts[a]; ok {
+		return acc.Sequence()
+	}
+
+	m.Accounts[a] = account.NewAccount(a, len(m.Accounts))
+	return 1
 }
 
 func (m *MockSandbox) CommitteeSize() int {
 	return m.Params.CommitteeSize
+}
+func (m *MockSandbox) UnbondInterval() int {
+	return m.Params.UnbondInterval
 }
 
 func (m *MockSandbox) IsInCommittee(crypto.Address) bool {

@@ -42,8 +42,10 @@ func (val *Validator) UnbondingHeight() int        { return val.data.UnbondingHe
 func (val *Validator) LastJoinedHeight() int       { return val.data.LastJoinedHeight }
 
 func (val Validator) Power() int64 {
-	// Only bootstrap validators at genesis block has no stake
-	if val.data.Stake == 0 {
+	//if the validator requested to unbond ignore stake
+	if val.data.UnbondingHeight > 0 {
+		return 0
+	} else if val.data.Stake == 0 { // Only bootstrap validators at genesis block has no stake
 		return 1
 	}
 	return val.data.Stake
@@ -67,6 +69,11 @@ func (val *Validator) UpdateLastJoinedHeight(height int) {
 // UpdateLastBondingHeight updates the last height that this validator bonded some stakes
 func (val *Validator) UpdateLastBondingHeight(height int) {
 	val.data.LastBondingHeight = height
+}
+
+// UpdateUnbondingHeight updates the UnbondingHeight validator requested unbonding it's stake
+func (val *Validator) UpdateUnbondingHeight(height int) {
+	val.data.UnbondingHeight = height
 }
 
 // Hash return the hash of this validator

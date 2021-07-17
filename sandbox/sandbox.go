@@ -177,6 +177,7 @@ func (sb *Concrete) UpdateValidator(val *validator.Validator) {
 		sb.shouldPanicForUnknownAddress()
 	}
 
+	// shouldn't this be power??
 	sb.totalStakeChange += val.Stake() - s.Validator.Stake()
 	s.Validator = *val
 	s.Updated = true
@@ -326,6 +327,13 @@ func (sb *Concrete) CommitteeSize() int {
 	defer sb.lk.RUnlock()
 
 	return sb.params.CommitteeSize
+}
+
+func (sb *Concrete) UnbondInterval() int {
+	sb.lk.RLock()
+	defer sb.lk.RUnlock()
+
+	return sb.params.UnbondInterval
 }
 
 func (sb *Concrete) IsInCommittee(addr crypto.Address) bool {

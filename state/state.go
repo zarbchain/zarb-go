@@ -416,9 +416,13 @@ func (st *state) evaluateSortition() bool {
 		return false
 	}
 
+	if val.UnbondingHeight() > 0 {
+		// we have Unbonded
+		return false
+	}
+
 	ok, proof := st.sortition.EvaluateSortition(st.lastInfo.BlockHash(), st.signer, val.Stake())
 	if ok {
-		//
 		trx := tx.NewSortitionTx(st.lastInfo.BlockHash(), val.Sequence()+1, val.Address(), proof)
 		st.signer.SignMsg(trx)
 
@@ -566,7 +570,10 @@ func (st *state) IsProposer(addr crypto.Address, round int) bool {
 }
 
 func (st *state) Transaction(id tx.ID) *tx.Tx {
-	tx, _ := st.store.Transaction(id)
+	tx, err := st.store.Transaction(id)
+	if err != nil {
+		st.logger.Error("Transaction Search in local store failed", "trx", id, "err", err)
+	}
 	return tx
 }
 

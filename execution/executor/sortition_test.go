@@ -52,13 +52,27 @@ func TestExecuteSortitionTx(t *testing.T) {
 		tSandbox.WelcomeToCommittee = true
 		assert.Error(t, exe.Execute(trx, tSandbox))
 
+		// Check if power is 0
+		tSandbox.AcceptSortition = true
+		tSandbox.WelcomeToCommittee = true
+		tSandbox.Validator(tValSigner.Address()).UpdateLastBondingHeight(3)
+		assert.Error(t, exe.Execute(trx, tSandbox))
+
 		// Sounds good
 		tSandbox.AcceptSortition = true
 		tSandbox.WelcomeToCommittee = true
+		tSandbox.Validator(tValSigner.Address()).UpdateLastBondingHeight(0)
 		assert.NoError(t, exe.Execute(trx, tSandbox))
+
+		// Check unbond state
+		tSandbox.AcceptSortition = true
+		tSandbox.WelcomeToCommittee = true
+		tSandbox.Validator(tValSigner.Address()).UpdateUnbondingHeight(1)
+		assert.Error(t, exe.Execute(trx, tSandbox))
 
 		// replay
 		assert.Error(t, exe.Execute(trx, tSandbox))
+
 	})
 
 	val := tSandbox.Validator(tValSigner.Address())

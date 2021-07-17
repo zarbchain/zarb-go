@@ -24,14 +24,14 @@ func (zs *zarbServer) GetTransaction(ctx context.Context, request *zarb.Transact
 
 	data, err := trx.Encode()
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	var json string
 	if request.Verbosity == 1 {
 		bz, err := trx.MarshalJSON()
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, err.Error())
+			return nil, status.Error(codes.Internal, err.Error())
 		}
 		json = string(bz)
 	}
@@ -49,18 +49,22 @@ func (zs *zarbServer) SendRawTransaction(ctx context.Context, request *zarb.Send
 
 	hexDecoded, err := hex.DecodeString(request.Data)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Couldn't decode transaction: %v", err)
+		zs.logger.Error("Invalid transaction", "err", err, "type", "hex decode")
+		return nil, status.Errorf(codes.InvalidArgument, "Couldn't decode transaction: %s", err.Error())
 	}
 	if err := tx.Decode(hexDecoded); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Couldn't decode transaction: %v", err)
+		zs.logger.Error("Invalid transaction", "err", err, "type", "decode")
+		return nil, status.Errorf(codes.InvalidArgument, "Couldn't decode transaction: %s", err.Error())
 	}
 
 	if err := tx.SanityCheck(); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Couldn't Verify Transaction:  %v", err)
+		zs.logger.Error("Invalid transaction", "err", err, "type", "sanity")
+		return nil, status.Errorf(codes.InvalidArgument, "Couldn't Verify Transaction: %s", err.Error())
 	}
 
 	if err := zs.state.AddPendingTxAndBroadcast(&tx); err != nil {
-		return nil, status.Errorf(codes.Aborted, "Couldn't add to Pending pool: %v", err)
+		zs.logger.Error("Couldn't add trx to pool", "err", err)
+		return nil, status.Errorf(codes.Canceled, "Couldn't add to Pending pool: %s", err.Error())
 	}
 
 	return &zarb.SendRawTransactionResponse{

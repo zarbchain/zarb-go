@@ -26,6 +26,7 @@ func (zs *zarbServer) GetValidatorByNumber(ctx context.Context, request *zarb.Va
 			Stake:             validator.Stake(),
 			LastBondingHeight: int32(validator.LastBondingHeight()),
 			LastJoinedHeight:  int32(validator.LastJoinedHeight()),
+			UnbondingHeight:   int32(validator.UnbondingHeight()),
 		},
 	}, nil
 }
@@ -33,7 +34,7 @@ func (zs *zarbServer) GetValidatorByNumber(ctx context.Context, request *zarb.Va
 func (zs *zarbServer) GetValidator(ctx context.Context, request *zarb.ValidatorRequest) (*zarb.ValidatorResponse, error) {
 	addr, err := crypto.AddressFromString(request.Address)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Invalid Validator Address:%s", err.Error())
+		return nil, status.Errorf(codes.InvalidArgument, "Invalid Validator Address: %s", err.Error())
 	}
 	validator := zs.state.Validator(addr)
 	if validator == nil {
@@ -51,6 +52,7 @@ func (zs *zarbServer) GetValidator(ctx context.Context, request *zarb.ValidatorR
 			Stake:             validator.Stake(),
 			LastBondingHeight: int32(validator.LastBondingHeight()),
 			LastJoinedHeight:  int32(validator.LastJoinedHeight()),
+			UnbondingHeight:   int32(validator.UnbondingHeight()),
 		},
 	}, nil
 }
@@ -68,6 +70,7 @@ func (zs *zarbServer) GetValidators(ctx context.Context, request *zarb.Validator
 			Stake:             v.Stake(),
 			LastBondingHeight: int32(v.LastBondingHeight()),
 			LastJoinedHeight:  int32(v.LastJoinedHeight()),
+			UnbondingHeight:   int32(v.UnbondingHeight()),
 		})
 	}
 	return &zarb.ValidatorsResponse{Validators: validatorsResp}, nil

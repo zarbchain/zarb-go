@@ -82,7 +82,7 @@ func (tx *Tx) SanityCheck() error {
 }
 
 func (tx *Tx) checkFee() error {
-	if tx.IsMintbaseTx() || tx.IsSortitionTx() {
+	if tx.IsFreeTx() {
 		if tx.Fee() != 0 {
 			return errors.Errorf(errors.ErrInvalidTx, "fee should set to zero")
 		}
@@ -173,6 +173,10 @@ func (tx *Tx) UnmarshalCBOR(bs []byte) error {
 		p = &payload.SendPayload{}
 	case payload.PayloadTypeBond:
 		p = &payload.BondPayload{}
+	case payload.PayloadTypeUnbond:
+		p = &payload.UnbondPayload{}
+	case payload.PayloadTypeWithdraw:
+		p = &payload.WithdrawPayload{}
 	case payload.PayloadTypeSortition:
 		p = &payload.SortitionPayload{}
 
@@ -229,6 +233,10 @@ func (tx *Tx) ID() ID {
 	return *tx.memorizedID
 }
 
+func (tx *Tx) IsBondTx() bool {
+	return tx.data.Type == payload.PayloadTypeBond
+}
+
 func (tx *Tx) IsMintbaseTx() bool {
 	return tx.data.Type == payload.PayloadTypeSend &&
 		tx.data.Payload.Signer().EqualsTo(crypto.TreasuryAddress)
@@ -238,8 +246,17 @@ func (tx *Tx) IsSortitionTx() bool {
 	return tx.data.Type == payload.PayloadTypeSortition
 }
 
-func (tx *Tx) IsBondTx() bool {
-	return tx.data.Type == payload.PayloadTypeBond
+func (tx *Tx) IsUnbondTx() bool {
+	return tx.data.Type == payload.PayloadTypeUnbond
+}
+
+func (tx *Tx) IsWithdrawTx() bool {
+	return tx.data.Type == payload.PayloadTypeWithdraw
+}
+
+//IsFreeTx will return if trx's fee is 0
+func (tx *Tx) IsFreeTx() bool {
+	return tx.IsMintbaseTx() || tx.IsSortitionTx() || tx.IsUnbondTx()
 }
 
 // ---------

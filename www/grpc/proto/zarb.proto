@@ -113,7 +113,8 @@ message Validator{
   int64 stake = 4;
   int32 last_bonding_height = 5;
   int32 last_joined_height = 6;
-  string address = 7;
+  int32 unbonding_height = 7;
+  string address = 8;
 }
 
 message Peer{

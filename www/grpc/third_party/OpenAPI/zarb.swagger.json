@@ -519,6 +519,10 @@
           "type": "integer",
           "format": "int32"
         },
+        "unbondingHeight": {
+          "type": "integer",
+          "format": "int32"
+        },
         "address": {
           "type": "string"
         }

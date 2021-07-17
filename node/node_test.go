@@ -27,9 +27,9 @@ func TestRunningNode(t *testing.T) {
 	signer := crypto.NewSigner(pv)
 	n, err := NewNode(gen, conf, signer)
 
+	require.NoError(t, err)
 	assert.Equal(t, n.state.LastBlockHash(), crypto.UndefHash)
 
-	require.NoError(t, err)
 	err = n.Start()
 	require.NoError(t, err)
 	n.Stop()

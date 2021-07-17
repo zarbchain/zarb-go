@@ -22,6 +22,10 @@ func (e *SortitionExecutor) Execute(trx *tx.Tx, sb sandbox.Sandbox) error {
 	if val == nil {
 		return errors.Errorf(errors.ErrInvalidTx, "unable to retrieve validator")
 	}
+	// Power for parked validators is set to zero
+	if val.Power() == 0 {
+		return errors.Errorf(errors.ErrInvalidTx, "Validator has no Power to be in committee")
+	}
 	if sb.CurrentHeight()-val.LastBondingHeight() < 2*sb.CommitteeSize() {
 		return errors.Errorf(errors.ErrInvalidTx, "in bonding period")
 	}
