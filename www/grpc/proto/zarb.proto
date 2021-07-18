@@ -2,6 +2,7 @@ syntax = 'proto3';
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "payloads.proto";
 
 option go_package = "github.com/zarbchain/zarb-go/www/grpc/zarb";
 
@@ -23,43 +24,39 @@ service Zarb {
 
 message AccountRequest {
 	string address = 1;
-  uint32 verbosity = 2;
 }
 
 message AccountResponse {
-  bytes data = 1;
-  string json = 2;
+  AccountInfo account =1;
 }
 
-message ValidatorsRequest {
-  uint32 verbosity = 2;
-}
+message ValidatorsRequest {}
+
 message ValidatorRequest {
 	string address = 1;
-  uint32 verbosity = 2;
 }
 message ValidatorByNumberRequest {
 	int32 number = 1;
-  uint32 verbosity = 2;
 }
 
 message ValidatorsResponse {
-  repeated Validator validators = 1;
+  repeated ValidatorInfo validators = 1;
 }
+
 message ValidatorResponse {
-  Validator validator = 1;
+  ValidatorInfo validator = 1;
 }
 
 message BlockRequest {
   int64 height = 1;
-  uint32 verbosity = 2;
+  BlockVerbosity verbosity = 2;
 }
 
 message BlockResponse {
   string hash = 1;
   google.protobuf.Timestamp block_time = 2;
-  bytes data = 3;
-  string json = 4;
+  BlockInfo info=3;
+  repeated TransactionInfo tranactions=5;
 }
 
 message BlockHeightRequest {
@@ -83,17 +80,15 @@ message NetworkInfoRequest {
 
 message NetworkInfoResponse {
   string peer_id = 1;
-  repeated Peer peers = 2;
+  repeated PeerInfo peers = 2;
 }
 
 message TransactionRequest {
   string id = 1;
-  uint32 verbosity = 2;
 }
 
 message TransactionResponse {
-  bytes data = 1;
-  string json = 2;
+  TransactionInfo tranaction=1;
 }
 
 message SendRawTransactionRequest {
@@ -106,17 +101,17 @@ message SendRawTransactionResponse {
 
 // TODO: add unbond height
 // TODO: in32 -> int64
-message Validator{
+message ValidatorInfo{
   string public_key = 1;
   int32 number = 2;
-  int32 sequence = 3;
+  int64 sequence = 3;
   int64 stake = 4;
   int32 last_bonding_height = 5;
   int32 last_joined_height = 6;
   string address = 7;
 }
 
-message Peer{
+message PeerInfo{
   string moniker = 1;
   bytes node_version = 2;
   string peer_id = 3;
@@ -126,4 +121,56 @@ message Peer{
   int32 received_messages = 7;
   int32 invalid_messages = 8;
   int32 received_bytes = 9;
+}
+
+message AccountInfo{
+  string address = 1;
+  int32 number = 2;
+  int64 sequence = 3;
+  int64 Balance = 4;
+}
+
+message BlockInfo {
+  int32 version = 1;
+  string last_block_hash = 2;
+  string state_hash=3;          
+  string tx_ids_hash=4;
+  string last_certificate_hash=5;
+  bytes sortition_seed=6;
+  string proposer_address=7;   
+  int64 round=8;  
+  repeated int32 committers=9;
+  repeated int32 absentees=10;
+  string signature=11;
+}
+
+message TransactionInfo{
+  string id=1;    
+  int32 Version =2;  
+  string stamp=3;    
+  int64 sequence=4; 
+  int64 Fee =5;
+  PayloadType Type=6;
+  oneof Payload {
+    SEND_PAYLOAD send=30;
+    BOND_PAYLOAD bond=31;
+    SORTITION_PAYLOAD sortition=32;
+  };
+  string memo=7;     
+  string public_key=8;
+  string signature=9;
+}
+
+enum PayloadType {
+  UNKNOWN=0;
+  SEND_PAYLOAD=1;
+  BOND_PAYLOAD =2;
+  SORTITION_PAYLOAD=3;
+  UNBOND_PAYLOAD =4;
+}
+
+enum BlockVerbosity {
+  BLOCK_HASH = 0;
+  BLOCK_INFO = 1;
+  BLOCK_TRANSACTIONS = 2;
 }

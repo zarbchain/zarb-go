@@ -7,26 +7,30 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/zarbchain/zarb-go/crypto"
 	"github.com/zarbchain/zarb-go/tx"
+	"github.com/zarbchain/zarb-go/tx/payload"
 	zarb "github.com/zarbchain/zarb-go/www/grpc/proto"
 )
 
 func TestGetTransaction(t *testing.T) {
 	conn, client := callServer(t)
-	tx1, _ := tx.GenerateTestSortitionTx()
+	tx1, _ := tx.GenerateTestSendTx()
 
 	tMockState.Store.SaveTransaction(tx1)
-	t.Run("Should return transaction, verbosity 0", func(t *testing.T) {
+
+	t.Run("Should return transaction", func(t *testing.T) {
 		res, err := client.GetTransaction(tCtx, &zarb.TransactionRequest{Id: tx1.ID().String()})
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
-		assert.Empty(t, res.Json)
-	})
-
-	t.Run("Should return transaction, verbosity 1", func(t *testing.T) {
-		res, err := client.GetTransaction(tCtx, &zarb.TransactionRequest{Id: tx1.ID().String(), Verbosity: 1})
-		assert.NoError(t, err)
-		assert.NotNil(t, res)
-		assert.NotEmpty(t, res.Json)
+		assert.NotEmpty(t, res.Tranaction)
+		assert.Equal(t, tx1.ID().String(), res.Tranaction.Id)
+		assert.Equal(t, tx1.Stamp().String(), res.Tranaction.Stamp)
+		assert.Equal(t, tx1.Fee(), res.Tranaction.Fee)
+		assert.Equal(t, tx1.Memo(), res.Tranaction.Memo)
+		assert.Equal(t, int64(tx1.Sequence()), res.Tranaction.Sequence)
+		assert.Equal(t, tx1.Signature().String(), res.Tranaction.Signature)
+		assert.Equal(t, tx1.Payload().(*payload.SendPayload).Amount, res.Tranaction.Payload.(*zarb.TransactionInfo_Send).Send.Amount)
+		assert.Equal(t, tx1.Payload().(*payload.SendPayload).Sender.String(), res.Tranaction.Payload.(*zarb.TransactionInfo_Send).Send.Sender)
+		assert.Equal(t, tx1.Payload().(*payload.SendPayload).Receiver.String(), res.Tranaction.Payload.(*zarb.TransactionInfo_Send).Send.Receiver)
 	})
 
 	t.Run("Should return nil value because transcation id is invalid", func(t *testing.T) {

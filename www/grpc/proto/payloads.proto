@@ -1,0 +1,20 @@
+syntax = 'proto3';
+
+option go_package = "github.com/zarbchain/zarb-go/www/grpc/zarb";
+
+message SEND_PAYLOAD{
+    string sender = 1;
+    string receiver = 2;
+    int64 amount =3;
+}
+
+message BOND_PAYLOAD{
+    string bonder = 1;
+    string validator = 2;
+    int64 stake = 3;
+}
+
+message SORTITION_PAYLOAD{
+    string address = 1;
+    string proof=2;
+}

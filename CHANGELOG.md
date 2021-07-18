@@ -3,7 +3,8 @@
 ## 1.1.0
 - Updating last bonding height for validators
 - Refactor Transactions in CMD
-- ADd support for pprof
+- Add support for pprof
+- refactored gRPC
 
 ## 1.0.0
 - Refactoring Consensus module

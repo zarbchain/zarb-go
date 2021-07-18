@@ -17,11 +17,11 @@ func (zs *zarbServer) GetBlockchainInfo(ctx context.Context, request *zarb.Block
 }
 func (zs *zarbServer) GetNetworkInfo(ctx context.Context, request *zarb.NetworkInfoRequest) (*zarb.NetworkInfoResponse, error) {
 	// Create response peers
-	rps := make([]*zarb.Peer, int32(len(zs.sync.Peers())))
+	rps := make([]*zarb.PeerInfo, int32(len(zs.sync.Peers())))
 
 	// cast to response peers from synced peers
 	for i, peer := range zs.sync.Peers() {
-		rps[i] = new(zarb.Peer)
+		rps[i] = new(zarb.PeerInfo)
 		p := rps[i]
 
 		bs, err := cbor.Marshal(peer.NodeVersion())

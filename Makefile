@@ -60,7 +60,7 @@ capnp:
 		-ogo ./www/capnp/zarb.capnp
 
 proto:
-	cd www/grpc/ && buf generate  --path ./proto/zarb.proto
+	cd www/grpc/ && buf generate --path ./proto/zarb.proto --path proto/payloads.proto
 	# Generate static assets for OpenAPI UI
 	cd www/grpc/ && statik -m -f -src third_party/OpenAPI/
 

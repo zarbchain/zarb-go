@@ -20,21 +20,13 @@ func (zs *zarbServer) GetAccount(ctx context.Context, request *zarb.AccountReque
 		return nil, status.Errorf(codes.InvalidArgument, "Account not found")
 
 	}
-	data, err := acc.Encode()
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
-	}
-	var json string
-	if request.Verbosity == 1 {
-		bz, err := acc.MarshalJSON()
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, err.Error())
-		}
-		json = string(bz)
-	}
 	res := &zarb.AccountResponse{
-		Data: data,
-		Json: json,
+		Account: &zarb.AccountInfo{
+			Address:  acc.Address().String(),
+			Number:   int32(acc.Number()),
+			Sequence: int64(acc.Sequence()),
+			Balance:  acc.Balance(),
+		},
 	}
 
 	return res, nil

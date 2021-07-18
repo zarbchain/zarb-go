@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/hex"
 
-	"github.com/zarbchain/zarb-go/account"
 	"github.com/zarbchain/zarb-go/crypto"
 	zarb "github.com/zarbchain/zarb-go/www/grpc/proto"
 	"google.golang.org/grpc"
@@ -33,17 +32,12 @@ func GetSequence(rpcEndpoint string, addr crypto.Address) (int, error) {
 		return 0, err
 	}
 
-	a, err := client.GetAccount(context.Background(), &zarb.AccountRequest{Address: addr.String()})
+	acc, err := client.GetAccount(context.Background(), &zarb.AccountRequest{Address: addr.String()})
 	if err != nil {
 		return 0, err
 	}
-	acc := account.NewAccount(addr, 0)
 
-	err = acc.Decode(a.Data)
-	if err != nil {
-		return 0, err
-	}
-	return acc.Sequence() + 1, nil
+	return int(acc.Account.Sequence) + 1, nil
 }
 
 func SendTx(rpcEndpoint string, payload []byte) (string, error) {
